@@ -8,12 +8,22 @@ import (
 	"github.com/hchaudhari73/goAuth/router"
 )
 
-const base = "localhost:8080"
-const csrfToken = "t3rc3s-p0t"
+const (
+	base      = "localhost:8080"
+	csrfToken = "t3rc3s-p0t"
+)
 
 func main() {
 	router := router.Router()
+
+	// csrf
+	csrfRouter := csrf.Protect(
+		[]byte(csrfToken),
+		csrf.Path("/"),
+		csrf.Secure(false),
+	)(router)
+
+	// init server
 	fmt.Printf("goAuth running on %s\n", base)
-	csrfRouter := csrf.Protect([]byte(csrfToken))(router)
 	http.ListenAndServe(base, csrfRouter)
 }

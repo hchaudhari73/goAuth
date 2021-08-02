@@ -16,6 +16,10 @@ var store = sessions.NewCookieStore([]byte("t3rc3s-p0t"))
 // This is the landing page for your api
 func Home(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("End point hit: Home")
+
+	/* Setting CSRF header  */
+	w.Header().Set("X-CSRF-TOKEN", csrf.Token(r))
+
 	fmt.Fprint(w, "Welcome to goAuth!")
 }
 
@@ -51,7 +55,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &cookie)
 	fmt.Println("Cookies set")
 
-	/* Setting CSRF header  */
-	w.Header().Set("X-CSRF-Token", csrf.Token(r))
-	fmt.Println("csrf set")
+	w.Header().Set("X-CSRF-TOKEN", csrf.Token(r))
+
+	fmt.Fprintln(w, "Logged in successfully")
 }
