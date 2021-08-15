@@ -1,0 +1,8 @@
+server:
+  base: "localhost"
+  baseHttp: "http://localhost"
+  port: "8080"
+
+security:
+  csrf_token: "t3rc3s-p0t"
+  session_token: "t3rc3s-p0t"

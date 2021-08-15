@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="X-CSRF-Token" content={{.CsrfToken}} />
+    <title>goAuth</title>
+    <style type="text/css">
+        body {
+            background-color: #323437;
+            font-family: Mono;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: #e2b714;
+            height: 30px;
+            display: inline-flex;
+            width: 100%;
+            justify-content: flex-start;
+
+        }
+
+        .nav-button {
+            text-align: center;
+            margin-left: 20px;
+            margin-top: 5px;
+            font-size: large;
+            font-family: monospace;
+            color: black;
+            text-decoration: none;
+        }
+
+        .header {
+            text-align: center;
+            color: #e2b714;
+        }
+
+        .form-div {
+            padding-left: 37%;
+            height: 66vh;
+            color: #d1d0c5;
+            margin-top: 10%;
+            font-size: larger;
+        }
+
+        .form-field {
+            height: 25px;
+            width: 40%;
+        }
+
+        .button {
+            width: 20%;
+            height: 30px;
+            margin-left: 10%;
+            font-family: monospace;
+            color: #494b4e;
+        }
+
+        .footer {
+            background-color: #494b4e;
+            height: 30px;
+            display: inline-flex;
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-left: 20px;
+            margin-top: 5px;
+            font-size: large;
+            font-family: monospace;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <a class="nav-button" href={{.Link}}>
+            Home
+        </a>
+    </div>
+    <h1 class="header">Login</h1>
+
+    <div class="form-div">
+
+        <!-- <form method="POST" action={{.LoginEndpoint}} id="loginEndpoint" > -->
+        <p>Email</p>
+        <input class="form-field" name="email" id="email">
+
+        <p>Password</p>
+        <input type="password" name="password" class="form-field" id="password">
+        </br>
+        </br>
+
+        <button type="submit" class="button" onclick="login()">
+            Login
+        </button>
+        <!-- </form> -->
+
+    </div>
+
+    <div class="footer">
+        <a class="footer-link" href="https://www.linkedin.com/in/harshal-chaudhari-a21009b0/">
+            me@linkedin
+        </a>
+
+        <a class="footer-link" href="https://github.com/hchaudhari73">
+            me@github
+        </a>
+
+        <a class="footer-link" href="https://github.com/hchaudhari73/goAuth">
+            this.Repo()
+        </a>
+
+        <a class="footer-link" href="https://github.com/users/hchaudhari73/projects/1">
+            this.Project()
+        </a>
+
+    </div>
+
+</body>
+
+<script>
+    function login() {
+        var email = document.getElementById("email").value
+        var password = document.getElementById("password").value
+        var loginEndpoint = "{{.LoginEndpoint}}"
+        var csrfToken = "{{.CsrfToken}}"
+        data = JSON.stringify({
+            email: email,
+            password: password,
+            loginEndpoint: loginEndpoint,
+            csrfToken: csrfToken
+        })
+        
+        // sending post request
+        fetch(loginEndpoint, {
+            method: "POST",
+            body: data,
+            headers: {
+                "X-CSRF-Token": csrfToken
+            }
+        })
+        .catch(error => console.error(error))
+    }
+</script>
+
+</html>
