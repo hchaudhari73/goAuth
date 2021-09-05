@@ -138,23 +138,6 @@ func LoginPost(w http.ResponseWriter, r *http.Request) {
 		}
 		http.SetCookie(w, &cookie)
 
-		// Redirecting to userhome
-		baseHttp, err := config.GetBaseHttpUrl()
-		if err != nil {
-			fmt.Println(err)
-		}
-		port, err := config.GetPort()
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Println("Cookies set")
-
-		fmt.Fprintln(w, "Successful Login")
-
-		userhomeURL := fmt.Sprintf("%s:%s/userhome", *baseHttp, *port)
-		http.Redirect(w, r, userhomeURL, 0)
-
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, map[string]string{"response": "Invalid playload"})

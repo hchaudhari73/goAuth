@@ -8,7 +8,7 @@ __TODO:__
 - JWT implementation
 - Setting server side cookies
 - Implementing CSRF
-
+- Rate Limiting to Avoid DOS
 __Secondary objective:__
 - Clean code
 - Writing tests

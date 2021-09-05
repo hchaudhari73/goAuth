@@ -148,6 +148,7 @@
                 "X-CSRF-Token": csrfToken
             }
         })
+        .then(() => window.location.replace("http://localhost:8080/userhome"))
         .catch(error => console.error(error))
     }
 </script>
