@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/hchaudhari73/goAuth/config"
+	"github.com/hchaudhari73/goAuth/database"
 	"github.com/hchaudhari73/goAuth/model"
 )
 
@@ -17,6 +18,7 @@ var (
 	home     = "templates/home.html"
 	login    = "templates/login.html"
 	userhome = "templates/userhome.html"
+	notFound = "templates/four04.html"
 )
 
 // Landing page for your api
@@ -56,6 +58,10 @@ func Home(w http.ResponseWriter, r *http.Request) {
 func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("End point hit: Login")
 
+	if isEmailPresent(r) {
+		http.Redirect(w, r, "/userhome", http.StatusPermanentRedirect)
+	}
+
 	if r.Method == "POST" {
 		// For POST method
 		// Getting data from request
@@ -63,8 +69,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&user)
 
 		// Verify user
-
-		if "" == user.Email && "" == user.Password {
+		responseUser := database.CheckCredsWhileLogin(&user)
+		if responseUser.IsValid() {
 
 			/* session */
 			sessionToken, err := config.GetSessionToken()
@@ -95,10 +101,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				Secure:   true,
 			}
 			http.SetCookie(w, &cookie)
+			http.Redirect(w, r, "/userhome", http.StatusPermanentRedirect)
 
-		} else {
-			fmt.Fprintln(w, http.StatusBadRequest, map[string]string{"msg": "Invalid Payload"})
 		}
+		parsedTemp, err := template.ParseFiles(notFound)
+		if err != nil {
+			fmt.Println("Error while parsing 404 error", err)
+		}
+		err = parsedTemp.Execute(w, nil)
+		if err != nil {
+			fmt.Println("Error while parsing 404 error", err)
+		}
+		json.NewEncoder(w).Encode("Error")
 	}
 
 	// For GET method
@@ -139,17 +153,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	To display user home page, after successful signin
 */
 func UserHome(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint hit: UserHome")
 
 	/*
 		First need to check weather the user's email
 		from cookies is present.
 	*/
-	// Getting cookies
-	cookies := r.Cookies()
-
-	// Getting our user data
-	if len(cookies) < 1 {
+	// Checking if session is present in cookies
+	if !isEmailPresent(r) {
 		// Redirecting to home
 		homeEP, err := getHomeEndpoint()
 		if err != nil {
@@ -157,6 +167,13 @@ func UserHome(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, *homeEP, http.StatusPermanentRedirect)
 	}
+
+	// Check for csrf token
+	if !isCSRFPresent(r) {
+		fmt.Fprintf(w, "CSRF Not present")
+	}
+
+	fmt.Println("Endpoint hit: UserHome")
 
 	/* Parsing html */
 	parsedTemplate, err := template.ParseFiles(userhome)

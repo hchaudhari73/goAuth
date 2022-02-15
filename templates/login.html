@@ -91,7 +91,6 @@
 
     <div class="form-div">
 
-        <!-- <form method="POST" action={{.LoginEndpoint}} id="loginEndpoint" > -->
         <p>Email</p>
         <input class="form-field" name="email" id="email">
 
@@ -99,11 +98,9 @@
         <input type="password" name="password" class="form-field" id="password">
         </br>
         </br>
-
-        <button type="submit" class="button" onclick="login()">
+        <button type="submit" class="button" onclick=login()>
             Login
         </button>
-        <!-- </form> -->
 
     </div>
 
@@ -127,7 +124,6 @@
     </div>
 
 </body>
-
 <script>
     function login() {
         var email = document.getElementById("email").value
@@ -140,7 +136,7 @@
             loginEndpoint: loginEndpoint,
             csrfToken: csrfToken
         })
-        
+
         // sending post request
         fetch(loginEndpoint, {
             method: "POST",
@@ -149,8 +145,8 @@
                 "X-CSRF-Token": csrfToken
             }
         })
-        .then(() => window.location.replace("http://localhost:8080/userhome"))
-        .catch(error => console.error(error))
+            .then(() => window.location.replace("/userhome"))
+            .catch(error => console.error(error))
     }
 </script>
 
