@@ -15,7 +15,7 @@
 
         .navbar {
             background-color: #e2b714;
-            height: 30px;
+            height: 7%;
             display: inline-flex;
             width: 100%;
             justify-content: flex-end;
@@ -25,6 +25,7 @@
             text-align: center;
             margin-right: 20px;
             margin-top: 5px;
+            margin-bottom: 5px;
             font-size: large;
             font-family: monospace;
             color: black;
@@ -39,7 +40,7 @@
         .body {
             padding-left: 20%;
             padding-right: 20%;
-            height: 83vh;
+            height: 82vh;
             color: #d1d0c5;
         }
 
@@ -65,8 +66,11 @@
 
 <body>
     <div class="navbar">
-        <a class="nav-button" href={{.Link}}>
+        <a class="nav-button" href={{.HomeLink}}>
             Home
+        </a>
+        <a class="nav-button" href={{.HomeLink}}>
+            Logout
         </a>
     </div>
     <h1 class="header">Welcome</h1>

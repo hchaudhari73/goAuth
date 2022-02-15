@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Server   Server
 	Security Security
+	Database Database
 }
 
 // Sub models
@@ -20,8 +21,12 @@ type Server struct {
 }
 
 type Security struct {
-	CSRFToken    string `yaml:"csrf-token"`
-	SessionToken string `yaml:"session_token"`
+	CSRFToken    string `yaml:"csrfToken"`
+	SessionToken string `yaml:"sessionToken"`
+}
+
+type Database struct {
+	MysqlConnectionStr string `yaml:"mysqlConnectionStr"`
 }
 
 // Reading config.yaml file
@@ -86,4 +91,14 @@ func GetSessionToken() (*string, error) {
 	}
 
 	return &c.Security.SessionToken, nil
+}
+
+// Database parameter
+func GetMysqlConnString() (*string, error) {
+	c, err := GetConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	return &c.Database.MysqlConnectionStr, nil
 }
