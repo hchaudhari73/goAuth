@@ -42,6 +42,7 @@ func getLoginEndpoint() (*string, error) {
 }
 
 // Check if email is stored in the cookies
+// Todo Refactor the following methods
 func isEmailPresent(r *http.Request) bool {
 	cookies := r.Cookies()
 	for _, cookie := range cookies {
@@ -57,6 +58,17 @@ func isCSRFPresent(r *http.Request) bool {
 	cookies := r.Cookies()
 	for _, cookie := range cookies {
 		if cookie.Name == "_gorilla_csrf" && cookie.Value != "" {
+			return true
+		}
+	}
+	return false
+}
+
+// Check for `token` in cookies
+func isJWTTokenPresent(r *http.Request) bool {
+	cookies := r.Cookies()
+	for _, cookie := range cookies {
+		if cookie.Name == "token" && cookie.Value != "" {
 			return true
 		}
 	}

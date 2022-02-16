@@ -6,14 +6,6 @@ type User struct {
 	Password string `json:"password"`
 }
 
-// Checks if the Name of the
-// user is present or not
-func (u *User) IsValid() bool {
-	// valid if the name is not empty
-	// else false
-	return u.Name != ""
-}
-
 // Injecting Data in html form
 type Data struct {
 	HomeLink      string

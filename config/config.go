@@ -23,6 +23,7 @@ type Server struct {
 type Security struct {
 	CSRFToken    string `yaml:"csrfToken"`
 	SessionToken string `yaml:"sessionToken"`
+	JWTKey       string `yaml:"jwtKey"`
 }
 
 type Database struct {
@@ -91,6 +92,15 @@ func GetSessionToken() (*string, error) {
 	}
 
 	return &c.Security.SessionToken, nil
+}
+
+func GetJWTkey() ([]byte, error) {
+	c, err := GetConfig()
+	if err != nil {
+		return nil, err
+	}
+	key := []byte(c.Security.JWTKey)
+	return key, nil
 }
 
 // Database parameter

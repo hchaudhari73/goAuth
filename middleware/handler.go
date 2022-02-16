@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/csrf"
-	"github.com/gorilla/sessions"
 	"github.com/hchaudhari73/goAuth/config"
 	"github.com/hchaudhari73/goAuth/database"
 	"github.com/hchaudhari73/goAuth/model"
@@ -58,9 +58,9 @@ func Home(w http.ResponseWriter, r *http.Request) {
 func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("End point hit: Login")
 
-	if isEmailPresent(r) {
-		http.Redirect(w, r, "/userhome", http.StatusPermanentRedirect)
-	}
+	// if isEmailPresent(r) {
+	// 	http.Redirect(w, r, "/userhome", http.StatusPermanentRedirect)
+	// }
 
 	if r.Method == "POST" {
 		// For POST method
@@ -69,49 +69,39 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&user)
 
 		// Verify user
-		responseUser := database.CheckCredsWhileLogin(&user)
-		if responseUser.IsValid() {
-
-			/* session */
-			sessionToken, err := config.GetSessionToken()
-			if err != nil {
-				fmt.Println(err)
-			}
-			store := sessions.NewCookieStore([]byte(*sessionToken))
-			session, err := store.Get(r, "session")
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			// saving session variables
-			session.Values["email"] = user.Email
-			session.Save(r, w)
-
-			/*
-				Server side cookies
-				Also will be able to test sessions
-			*/
-			cookie := http.Cookie{
-				Name:    "email",
-				Value:   fmt.Sprint(session.Values["email"]),
-				Path:    "/",
-				Expires: time.Now().Add(time.Hour),
-
-				HttpOnly: true,
-				Secure:   true,
-			}
-			http.SetCookie(w, &cookie)
-			http.Redirect(w, r, "/userhome", http.StatusPermanentRedirect)
-
-		}
-		parsedTemp, err := template.ParseFiles(notFound)
+		_, err := database.CheckCredsWhileLogin(&user)
 		if err != nil {
-			fmt.Println("Error while parsing 404 error", err)
+			parsedTemp, err := template.ParseFiles(userhome)
+			if err != nil {
+				fmt.Println("Error while parsing 404 error", err)
+			}
+			parsedTemp.Execute(w, nil)
+			fmt.Fprint(w, "400")
 		}
-		err = parsedTemp.Execute(w, nil)
+
+		jwtExpiry := time.Now().Add(8 * time.Hour)
+		claim := jwt.StandardClaims{
+			ExpiresAt: jwtExpiry.Unix(),
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+		key, err := config.GetJWTkey()
 		if err != nil {
-			fmt.Println("Error while parsing 404 error", err)
+			fmt.Println("Error while getting JWT key:", err)
+			return
 		}
+		tokenString, err := token.SignedString(key)
+		if err != nil {
+			fmt.Println("Error while creating string token:", err)
+			fmt.Fprintf(w, "internal server error")
+			return
+		}
+
+		// Setting cookies
+		http.SetCookie(w, &http.Cookie{
+			Name:    "token",
+			Value:   tokenString,
+			Expires: jwtExpiry,
+		})
 	}
 
 	// For GET method
@@ -158,18 +148,13 @@ func UserHome(w http.ResponseWriter, r *http.Request) {
 		from cookies is present.
 	*/
 	// Checking if session is present in cookies
-	if !isEmailPresent(r) {
+	if !isJWTTokenPresent(r) {
 		// Redirecting to home
 		homeEP, err := getHomeEndpoint()
 		if err != nil {
 			fmt.Println(err)
 		}
 		http.Redirect(w, r, *homeEP, http.StatusPermanentRedirect)
-	}
-
-	// Check for csrf token
-	if !isCSRFPresent(r) {
-		fmt.Fprintf(w, "CSRF Not present")
 	}
 
 	fmt.Println("Endpoint hit: UserHome")

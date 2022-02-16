@@ -98,7 +98,7 @@
         <input type="password" name="password" class="form-field" id="password">
         </br>
         </br>
-        <button type="submit" class="button" onclick=login()>
+        <button type="submit" class="button" onclick="login()">
             Login
         </button>
 
@@ -145,7 +145,11 @@
                 "X-CSRF-Token": csrfToken
             }
         })
-            .then(() => window.location.replace("/userhome"))
+            .then((response) => {
+                if (response.status == 200) {
+                    window.location.replace("/userhome")
+                } 
+            })
             .catch(error => { console.error(error) })
     }
 </script>
