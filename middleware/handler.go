@@ -112,7 +112,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("Error while parsing 404 error", err)
 		}
-		json.NewEncoder(w).Encode("Error")
 	}
 
 	// For GET method
