@@ -18,8 +18,7 @@ _To make a secure web app using go._
 ## Contains:
 * API:
     * Home
-    * Login(Get: To load html and inject csrf token)
-    * Login(Post: To make requst and consume api with csrf as header)
+    * Login
     * UserHome(Get: To load userhome after successful login)
 * Data:
     * In memory (for simplicity) 
@@ -28,8 +27,7 @@ _To make a secure web app using go._
     * login
     * userhome
 
-## Note:
-    * Dummy Data for successful login
-_       * Name:     "Dummy User",
-_	    * Email:    "dummy@email.com",
-_	    * Password: "dummyPassword",
+## Branches:
+| Branch Name | Purpose |
+| session | Session based login |
+| jwt | JWT based login |
