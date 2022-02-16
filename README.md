@@ -31,6 +31,4 @@ _To make a secure web app using go._
 | Branch Name | Purpose |
 | ---- | ----- |
 | session | Session based login |
-| ---- | ----- |
 | jwt | JWT based login |
-| ---- | ----- |
