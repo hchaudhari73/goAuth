@@ -50,6 +50,11 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Redirect to `/` from `/home`
+func Base(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+}
+
 /*
 	Login
 	Get: This is a get function to load html and inject csrf
@@ -185,12 +190,68 @@ func UserHome(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	logoutEP, err := geLogoutEndpoint()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	data := model.Data{
-		HomeLink: *homeEP,
+		HomeLink:   *homeEP,
+		LogoutLink: *logoutEP,
 	}
 
 	err = parsedTemplate.Execute(w, data)
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+// Logout
+// Will delete the `email` and `session` cookies
+func Logout(w http.ResponseWriter, r *http.Request) {
+	// Checking if session is present in cookies
+	if !isEmailPresent(r) {
+		// Redirecting to home
+		homeEP, err := getHomeEndpoint()
+		if err != nil {
+			fmt.Println(err)
+		}
+		http.Redirect(w, r, *homeEP, http.StatusPermanentRedirect)
+	}
+
+	// Check for csrf token
+	if !isCSRFPresent(r) {
+		fmt.Fprintf(w, "CSRF Not present")
+	}
+	fmt.Println("Endpoint hit: logout")
+
+	// Removing `email` cookie
+	cookie := http.Cookie{
+		Name:   "email",
+		Path:   "/",
+		MaxAge: -1,
+
+		HttpOnly: true,
+		Secure:   true,
+	}
+	http.SetCookie(w, &cookie)
+
+	// removing session
+	/* session */
+	sessionToken, err := config.GetSessionToken()
+	if err != nil {
+		fmt.Println(err)
+	}
+	store := sessions.NewCookieStore([]byte(*sessionToken))
+	session, err := store.Get(r, "session")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// saving session variables
+	session.Values["email"] = ""
+	session.Options.MaxAge = -1
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/", http.StatusPermanentRedirect)
 }

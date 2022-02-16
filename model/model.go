@@ -19,4 +19,5 @@ type Data struct {
 	HomeLink      string
 	CsrfToken     string
 	LoginEndpoint string
+	LogoutLink    string
 }

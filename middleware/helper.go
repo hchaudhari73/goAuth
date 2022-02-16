@@ -24,6 +24,23 @@ func getHomeEndpoint() (*string, error) {
 	return &endpoint, nil
 }
 
+func geLogoutEndpoint() (*string, error) {
+
+	baseHttp, err := config.GetBaseHttpUrl()
+	if err != nil {
+		return nil, err
+	}
+
+	port, err := config.GetPort()
+	if err != nil {
+		return nil, err
+	}
+
+	// login endpoint
+	endpoint := fmt.Sprintf("%s:%s/logout", *baseHttp, *port)
+	return &endpoint, nil
+}
+
 func getLoginEndpoint() (*string, error) {
 
 	baseHttp, err := config.GetBaseHttpUrl()
