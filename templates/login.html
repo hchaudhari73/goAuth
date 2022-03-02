@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="X-CSRF-Token" content={{.CsrfToken}} />
+    <meta name="X-CSRF-Token" content={{ .CsrfToken }}/>
     <title>goAuth</title>
     <style type="text/css">
         body {
@@ -90,18 +90,16 @@
     <h1 class="header">Login</h1>
 
     <div class="form-div">
+            <p>Email</p>
+            <input class="form-field" name="email" id="email">
 
-        <p>Email</p>
-        <input class="form-field" name="email" id="email">
-
-        <p>Password</p>
-        <input type="password" name="password" class="form-field" id="password">
-        </br>
-        </br>
-        <button type="submit" class="button" onclick="login()">
-            Login
-        </button>
-
+            <p>Password</p>
+            <input type="password" name="password" class="form-field" id="password">
+            </br>
+            </br>
+            <button type="submit" class="button" onclick="login()">
+                Login
+            </button>
     </div>
 
     <div class="footer">
@@ -148,7 +146,7 @@
             .then((response) => {
                 if (response.status == 200) {
                     window.location.replace("/userhome")
-                } 
+                }
             })
             .catch(error => { console.error(error) })
     }

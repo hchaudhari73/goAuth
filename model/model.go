@@ -8,7 +8,8 @@ type User struct {
 
 // Injecting Data in html form
 type Data struct {
-	HomeLink      string
-	CsrfToken     string
-	LoginEndpoint string
+	HomeLink       string
+	CsrfToken      string
+	LoginEndpoint  string
+	LogoutEndpoint string
 }

@@ -25,9 +25,6 @@ var (
 func Home(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("End point hit: Home")
 
-	// Setting CSRF header
-	w.Header().Set("X-CSRF-Token", csrf.Token(r))
-
 	// Parsing html file
 	parsedTemplate, err := template.ParseFiles(home)
 	if err != nil {
@@ -58,9 +55,9 @@ func Home(w http.ResponseWriter, r *http.Request) {
 func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("End point hit: Login")
 
-	// if isEmailPresent(r) {
-	// 	http.Redirect(w, r, "/userhome", http.StatusPermanentRedirect)
-	// }
+	if isEmailPresent(r) {
+		http.Redirect(w, r, "/userhome", http.StatusPermanentRedirect)
+	}
 
 	if r.Method == "POST" {
 		// For POST method
@@ -71,12 +68,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		// Verify user
 		_, err := database.CheckCredsWhileLogin(&user)
 		if err != nil {
-			parsedTemp, err := template.ParseFiles(userhome)
+			parsedTemp, err := template.ParseFiles(notFound)
 			if err != nil {
 				fmt.Println("Error while parsing 404 error", err)
 			}
 			parsedTemp.Execute(w, nil)
-			fmt.Fprint(w, "400")
+			return
 		}
 
 		jwtExpiry := time.Now().Add(8 * time.Hour)
@@ -105,9 +102,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// For GET method
-	// Setting csrf token
-	w.Header().Set("X-CSRF-Token", csrf.Token(r))
-
 	// Parsing html
 	parsedTemplate, err := template.ParseFiles(login)
 	if err != nil {
@@ -170,12 +164,37 @@ func UserHome(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	logoutEP, err := getLogoutEndpoint()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	data := model.Data{
-		HomeLink: *homeEP,
+		HomeLink:       *homeEP,
+		LogoutEndpoint: *logoutEP,
 	}
 
 	err = parsedTemplate.Execute(w, data)
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+// Logout
+func Logout(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("Endpoint hit: Logout")
+
+	// Removing `token` cookie from the browser
+	http.SetCookie(w, &http.Cookie{
+		Name:   "token",
+		MaxAge: -1,
+	})
+
+	homeEP, err := getHomeEndpoint()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	http.Redirect(w, r, *homeEP, http.StatusPermanentRedirect)
 }

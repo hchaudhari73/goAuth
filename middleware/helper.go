@@ -41,23 +41,29 @@ func getLoginEndpoint() (*string, error) {
 	return &endpoint, nil
 }
 
+func getLogoutEndpoint() (*string, error) {
+
+	baseHttp, err := config.GetBaseHttpUrl()
+	if err != nil {
+		return nil, err
+	}
+
+	port, err := config.GetPort()
+	if err != nil {
+		return nil, err
+	}
+
+	// login endpoint
+	endpoint := fmt.Sprintf("%s:%s/logout", *baseHttp, *port)
+	return &endpoint, nil
+}
+
 // Check if email is stored in the cookies
 // Todo Refactor the following methods
 func isEmailPresent(r *http.Request) bool {
 	cookies := r.Cookies()
 	for _, cookie := range cookies {
-		if cookie.Name == "email" && cookie.Value != "" {
-			return true
-		}
-	}
-	return false
-}
-
-// Check for `_gorilla_csrf` token in cookies
-func isCSRFPresent(r *http.Request) bool {
-	cookies := r.Cookies()
-	for _, cookie := range cookies {
-		if cookie.Name == "_gorilla_csrf" && cookie.Value != "" {
+		if cookie.Name == "token" && cookie.Value != "" {
 			return true
 		}
 	}
